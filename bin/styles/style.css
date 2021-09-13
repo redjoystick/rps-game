@@ -1,5 +1,86 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
 #box {
+    position: relative;
     width: 600px;
     height: 400px;
-    background-color: #c3965f;
+    border: 5px solid black;
+    border-radius: 10px;
+}
+
+/** Results */
+#box #player1-result {
+    top: 150px;
+    left: 150px;
+}
+
+#box #player2-result {
+    bottom: 150px;
+    right: 150px;
+}
+
+#box .result {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+}
+
+/** Cards */
+#box #player1-cards {
+    bottom: 50px;
+    left: 50px;
+}
+
+#box #player2-cards {
+    top: 50px;
+    right: 50px;
+}
+
+#box .cards {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    width: 270px;
+    height: 50px;
+}
+
+#box .cards .card-item {
+    margin-right: 5px;
+    width: 50px;
+    height: 50px;
+}
+
+#box .cards .card-item:last-of-type { /** last-child */
+    margin-right: unset;
+}
+
+#box .rps-icon {
+    background-image: url(../assets/images/paper.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/** Scroe */
+#box #player1-score {
+    bottom: 50px;
+    right: 150px;
+}
+
+#box #player2-score {
+    top: 50px;
+    left: 150px;
+}
+
+#box .scores {
+    position: absolute;
+    background-color: green;
+    width: 130px;
+    height: 100px;
 }
