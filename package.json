@@ -1,0 +1,22 @@
+{
+  "name": "rps-game",
+  "version": "1.0.0",
+  "description": "猜拳遊戲",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redjoystick/rps-game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/redjoystick/rps-game/issues"
+  },
+  "homepage": "https://github.com/redjoystick/rps-game#readme",
+  "dependencies": {
+    "typescript": "^4.4.3"
+  }
+}
