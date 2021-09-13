@@ -1,5 +1,39 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    width:  100vw;
+    height: 100vh;
+}
+
+
 #box {
+    position: relative;
+
     width: 600px;
     height: 400px;
-    background-color: #c3965f;
+    border : 5px solid ;
+    border-radius: 10px;
+
 }
+
+#box #player1-result {
+    position: absolute;
+    background-color: blue;
+    top: 150px;
+    left: 150px;
+    width: 100px;
+    height: 100px;
+}
+
+#box #player2-result {
+    position: absolute;
+    background-color: blue;
+    right: 150px;
+    bottom: 150px;
+    width: 100px;
+    height: 100px;
+}
+
+#box 
