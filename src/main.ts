@@ -36,3 +36,4 @@ player1.cardsBox.addEventListener("click", (event: MouseEvent) => {
     setRpsIcon(player1.result, result);
 
 });
+
