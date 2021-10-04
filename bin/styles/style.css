@@ -13,6 +13,7 @@ body {
     height: 800px;
     background-image: url(../assets/images/BG.png);
     
+    transform: scale(60%, 60%);
 }
 
 /** Results */
@@ -59,6 +60,10 @@ body {
     background-size: auto;
     background-repeat: no-repeat;
 }
+
+/* #box .cards .card-item:hover {
+    background-image: url(../assets/images/card_paper_s.png);
+} */
 
 #box .cards .card-item:last-of-type { /** last-child */
     margin-right: unset;
