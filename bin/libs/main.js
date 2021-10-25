@@ -60,9 +60,9 @@ player1.cardsBox.addEventListener("mouseover", (event) => {
 });
 player1.cardsBox.addEventListener("mouseout", (event) => {
     //TODO 完成無 hover 狀態，試著解決滑鼠移動過快，造成相關的錯誤問題
-    // const i = player1.cards.indexOf(event.target as HTMLDivElement);
-    // if (i >= 0)
-    //     setRpsIcon(player1.cards[i], playerCards[i], true);
+    const i = player1.cards.indexOf(event.target);
+    if (i < 0)
+        setRpsIcon(player1.cards[i], playerCards[i], true);
 });
 player1.cardsBox.addEventListener("click", (event) => {
     const i = player1.cards.indexOf(event.target);

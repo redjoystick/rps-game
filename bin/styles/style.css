@@ -61,9 +61,9 @@ body {
     background-repeat: no-repeat;
 }
 
-/* #box .cards .card-item:hover {
-    background-image: url(../assets/images/card_paper_s.png);
-} */
+#box .cards .card-item:hover {
+    box-shadow: 3px 1px rgba(0,0,0,0.5);
+} 
 
 #box .cards .card-item:last-of-type { /** last-child */
     margin-right: unset;
@@ -93,3 +93,11 @@ body {
     background-image: url(../assets/images/10.png);
 
 }
+
+/*
+img{
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  */
