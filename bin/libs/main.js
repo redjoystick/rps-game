@@ -1,5 +1,12 @@
 "use strict";
 const NUM_CARDS = 5;
+var GameStatus;
+(function (GameStatus) {
+    GameStatus[GameStatus["Prepare"] = 0] = "Prepare";
+    GameStatus[GameStatus["Result"] = 1] = "Result";
+    GameStatus[GameStatus["Over"] = 2] = "Over";
+})(GameStatus || (GameStatus = {}));
+let gameStatus = GameStatus.Prepare;
 // type RPS = "rock" | "paper" | "scissors";
 var RPS;
 (function (RPS) {
@@ -8,22 +15,32 @@ var RPS;
     RPS[RPS["Scissors"] = 2] = "Scissors";
 })(RPS || (RPS = {}));
 const MAX_RPS = Object.keys(RPS).length / 2;
+var AIMode;
+(function (AIMode) {
+    AIMode[AIMode["Random"] = 0] = "Random";
+    AIMode[AIMode["Mode2"] = 1] = "Mode2";
+})(AIMode || (AIMode = {}));
+const aiMode = Math.random() > 0.5 ? AIMode.Random : AIMode.Mode2;
 const player1 = {
     result: document.querySelector("#box #player1-result"),
     score: document.querySelector("#box #player1-score"),
     cardsBox: document.querySelector("#box #player1-cards"),
     cards: Array.from(document.querySelectorAll("#box #player1-cards .card-item")),
-    suit: RPS.Rock,
     hp: 10,
+    lastCardId: -1,
+    lastSuit: RPS.Rock,
 };
 const player2 = {
     result: document.querySelector("#box #player2-result"),
     score: document.querySelector("#box #player2-score"),
     cardsBox: document.querySelector("#box #player2-cards"),
     cards: Array.from(document.querySelectorAll("#box #player2-cards .card-item")),
-    suit: RPS.Rock,
     hp: 10,
+    lastCardId: -1,
+    lastSuit: RPS.Rock,
 };
+const message = document.querySelector("#box #message");
+//TODO 塞進 player1, player2
 const playerCards = [];
 const cpuCards = [];
 function initCards(player, cards) {
@@ -36,7 +53,14 @@ function initCards(player, cards) {
     cards.forEach((card, i) => setRpsIcon(player[i], card));
 }
 function setRpsIcon(element, rps, hover = false) {
+    if (!element)
+        return;
     element.style.backgroundImage = `url(./assets/images/card_${RPS[rps].toLowerCase()}${hover ? "_s" : ""}.png)`;
+}
+function clearRpsIcon(element) {
+    if (!element)
+        return;
+    element.style.backgroundImage = "";
 }
 function setHp(element, i) {
     element.style.backgroundImage = `url(./assets/images/${i}.png)`;
@@ -46,7 +70,6 @@ initCards(player1.cards, playerCards);
 initCards(player2.cards, cpuCards);
 setHp(player1.score, player1.hp);
 setHp(player2.score, player2.hp);
-console.log(playerCards);
 initPlayerEvents();
 // 處理玩家的滑鼠反白效果
 function initPlayerEvents() {
@@ -66,80 +89,126 @@ function onMouseOver(event) {
 }
 function onMouseOut(event) {
     const i = player1.cards.indexOf(event.target);
-    player1.cardsBox.addEventListener("mouseout", (event) => {
-        //TODO 完成無 hover 狀態，試著解決滑鼠移動過快，造成相關的錯誤問題
-        const i = player1.cards.indexOf(event.target);
-        if (i < 0)
-            setRpsIcon(player1.cards[i], playerCards[i], true);
-    });
     if (i >= 0)
         setRpsIcon(player1.cards[i], playerCards[i], false);
 }
 /** 處理玩家的出牌 */
 function onClick(event) {
+    // 顯示出牌的圖示
+    const i = player1.lastCardId = player1.cards.indexOf(event.target);
+    if (i < 0)
+        return;
+    gameStatus = GameStatus.Result;
     // 禁止玩家再出牌
     // player1.cardsBox.classList.add("disabled");
     removePlayerEvents();
-    // 顯示出牌的圖示
-    const i = player1.cards.indexOf(event.target);
-    if (i >= 0) {
-        setRpsIcon(player1.result, playerCards[i]);
-        player1.suit = playerCards[i];
-        // player1.cards[i].classList.add("invisible");
-        // 補一張新的牌
-        playerCards[i] = Math.random() * MAX_RPS >> 0;
-        setRpsIcon(player1.cards[i], playerCards[i], false);
-    }
-    //TODO 電腦出拳，AI 要多聰明你決定 ?
+    setRpsIcon(player1.result, playerCards[i]);
+    player1.lastSuit = playerCards[i];
+    player1.cards[i].classList.add("invisible");
     handleAI();
-    //TODO 輸贏判斷
+    // 補一張新的牌
+    playerCards[i] = Math.random() * MAX_RPS >> 0;
+    setRpsIcon(player1.cards[i], playerCards[i], false);
     handleResult();
-    // setHp(player1.score,player1.hp);
-    // setHp(player2.score,player2.hp);
 }
 function handleAI() {
     const i = Math.random() * 4 >> 0;
-    player2.suit = cpuCards[i];
+    player2.lastSuit = cpuCards[i];
     setRpsIcon(player2.result, cpuCards[i]);
     cpuCards[i] = Math.random() * MAX_RPS >> 0;
     setRpsIcon(player2.cards[i], cpuCards[i]);
     //TODO 判斷對方的卡牌類型的比例，決定出牌的內容
+    if (aiMode === AIMode.Random) {
+        //TODO...
+    }
+    else {
+    }
+    const statics = playerCards.reduce((p, v) => {
+        p[v]++;
+        return p;
+    }, [0, 0, 0]);
+    // const max = Math.max(...playerCards);
+    // const maxIndex = playerCards.indexOf(max);
+    const maxIndex = statics.reduce((p, v, i) => {
+        return statics[p] < v ? i : p;
+    }, RPS.Rock);
+    switch (maxIndex) {
+        case RPS.Rock:
+            //TODO 電腦方要出布；如果沒有布，就隨機
+            break;
+        //case ...:
+    }
     // NPC 隨機
     // [石頭、石頭、石頭、剪刀、剪刀]
     // .reduce() / 變數 + for 1 >> 石頭: 3, 剪刀: 2
     // NPC >> 必出布 >> 出石頭
+    /*
+    const reduceArr = playerCards.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue
+      });
+    if ( reduceArr <= 3 ){
+        if ( cpuCards.indexOf(1) == -1 ){
+            player2.suit = cpuCards[Math.random() * 4 >> 0];
+        }else{
+            player2.suit = cpuCards[cpuCards.indexOf(1)];
+        };
+    }else if( reduceArr > 3 && reduceArr < 6){
+        if ( cpuCards.indexOf(2) == -1 ){
+            player2.suit = cpuCards[Math.random() * 4 >> 0];
+        }else{
+            player2.suit = cpuCards[cpuCards.indexOf(2)];
+        };
+    }
+    else {
+        if ( cpuCards.indexOf(0) == -1 ){
+            player2.suit = cpuCards[Math.random() * 4 >> 0];
+        }else{
+            player2.suit = cpuCards[cpuCards.indexOf(0)];
+        };
+    };
+    */
     // .map() / 變數 + for 2 >> 石頭: 0.6, 剪刀: 0.4
     // NPC >> 布: 0.6, 石頭: 0.4
 }
-;
+/** 處理輸贏 */
 function handleResult() {
-    //TODO 顯示輸贏後，停頓個 1 ~ 2 秒，進入下一局 setTimeout()
-    if (player1.hp <= 0 || player2.hp <= 0) {
-        console.log("game set");
-        removePlayerEvents();
+    if (player1.lastSuit === player2.lastSuit) {
+        console.log("平手");
+    }
+    else if ((player1.lastSuit === RPS.Rock && player2.lastSuit === RPS.Scissors) ||
+        (player1.lastSuit === RPS.Paper && player2.lastSuit === RPS.Rock) ||
+        (player1.lastSuit === RPS.Scissors && player2.lastSuit === RPS.Paper)) {
+        console.log("玩家 1 贏");
+        player2.hp--;
+        setHp(player2.score, player2.hp);
+        message.style.backgroundImage = `url(./assets/images/msg_win.png)`;
+        message.classList.remove("invisible");
     }
     else {
-        if (player1.suit === player2.suit) {
-            console.log("平手");
-        }
-        else if ((player1.suit === RPS.Rock && player2.suit === RPS.Scissors) ||
-            (player1.suit === RPS.Paper && player2.suit === RPS.Rock) ||
-            (player1.suit === RPS.Scissors && player2.suit === RPS.Paper)) {
-            console.log("玩家 1 贏");
-            player2.hp--;
-            setHp(player2.score, player2.hp);
-            //TODO 處理生命的顯示 setHp()
+        console.log("輸");
+        player1.hp--;
+        setHp(player1.score, player1.hp);
+        message.style.backgroundImage = `url(./assets/images/msg_lose.png)`;
+        message.classList.remove("invisible");
+    }
+    // 顯示輸贏後，停頓個 1 ~ 2 秒，進入下一局 setTimeout()
+    setTimeout(() => {
+        message.classList.add("invisible");
+        // 若當其中一方分數為 0 時，表示遊戲結束；否則，繼續遊戲
+        if (player1.hp <= 0 || player2.hp <= 0) {
+            console.log("game set");
+            removePlayerEvents();
+            gameStatus = GameStatus.Over;
+            //TODO Display "Winner Player1/2"
         }
         else {
-            console.log("輸");
-            player1.hp--;
-            setHp(player1.score, player1.hp);
-            //TODO 處理生命的顯示 setHp()
+            //TODO 更改 aiMode ?
+            player1.cards[player1.lastCardId].classList.remove("invisible");
+            clearRpsIcon(player1.result);
+            clearRpsIcon(player2.result);
+            initPlayerEvents();
+            gameStatus = GameStatus.Prepare;
         }
-        onClick;
-        setTimeout(initPlayerEvents, 1000);
-    }
-    ;
+    }, 1000);
 }
-;
 //# sourceMappingURL=main.js.map
