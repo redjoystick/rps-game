@@ -135,7 +135,6 @@ function handleAI() {
     // .reduce() / 變數 + for 1 >> 石頭: 3, 剪刀: 2
     // NPC >> 必出布 >> 出石頭
     
-    /*
     const reduceArr = playerCards.reduce((accumulator, currentValue) => {
         return accumulator + currentValue
       });
@@ -159,7 +158,7 @@ function handleAI() {
             player2.suit = cpuCards[cpuCards.indexOf(0)];
         };
     };
-    */
+    // type RPS = "rock" | "paper" | "scissors";
     
     // .map() / 變數 + for 2 >> 石頭: 0.6, 剪刀: 0.4
     // NPC >> 布: 0.6, 石頭: 0.4
