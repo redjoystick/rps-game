@@ -46,6 +46,8 @@ initCards(player1.cards, playerCards);
 initCards(player2.cards, cpuCards);
 setHp(player1.score, player1.hp);
 setHp(player2.score, player2.hp);
+console.log(playerCards);
+initPlayerEvents();
 // 處理玩家的滑鼠反白效果
 function initPlayerEvents() {
     player1.cardsBox.addEventListener("mouseover", onMouseOver);
@@ -70,6 +72,15 @@ function onMouseOut(event) {
         if (i < 0)
             setRpsIcon(player1.cards[i], playerCards[i], true);
     });
+    if (i >= 0)
+        setRpsIcon(player1.cards[i], playerCards[i], false);
+}
+/** 處理玩家的出牌 */
+function onClick(event) {
+    // 禁止玩家再出牌
+    // player1.cardsBox.classList.add("disabled");
+    removePlayerEvents();
+    // 顯示出牌的圖示
     const i = player1.cards.indexOf(event.target);
     if (i >= 0) {
         setRpsIcon(player1.result, playerCards[i]);
@@ -86,7 +97,6 @@ function onMouseOut(event) {
     // setHp(player1.score,player1.hp);
     // setHp(player2.score,player2.hp);
 }
-initPlayerEvents();
 function handleAI() {
     const i = Math.random() * 4 >> 0;
     player2.suit = cpuCards[i];
@@ -104,19 +114,32 @@ function handleAI() {
 ;
 function handleResult() {
     //TODO 顯示輸贏後，停頓個 1 ~ 2 秒，進入下一局 setTimeout()
-    if (player1.suit === player2.suit) {
-        console.log("平手");
-    }
-    else if ((player1.suit === RPS.Rock && player2.suit === RPS.Scissors) ||
-        (player1.suit === RPS.Paper && player2.suit === RPS.Rock) ||
-        (player1.suit === RPS.Scissors && player2.suit === RPS.Paper)) {
-        console.log("玩家 1 贏");
-        //TODO 處理生命的顯示 setHp()
+    if (player1.hp <= 0 || player2.hp <= 0) {
+        console.log("game set");
+        removePlayerEvents();
     }
     else {
-        console.log("輸");
-        //TODO 處理生命的顯示 setHp()
+        if (player1.suit === player2.suit) {
+            console.log("平手");
+        }
+        else if ((player1.suit === RPS.Rock && player2.suit === RPS.Scissors) ||
+            (player1.suit === RPS.Paper && player2.suit === RPS.Rock) ||
+            (player1.suit === RPS.Scissors && player2.suit === RPS.Paper)) {
+            console.log("玩家 1 贏");
+            player2.hp--;
+            setHp(player2.score, player2.hp);
+            //TODO 處理生命的顯示 setHp()
+        }
+        else {
+            console.log("輸");
+            player1.hp--;
+            setHp(player1.score, player1.hp);
+            //TODO 處理生命的顯示 setHp()
+        }
+        onClick;
+        setTimeout(initPlayerEvents, 1000);
     }
+    ;
 }
 ;
 //# sourceMappingURL=main.js.map
