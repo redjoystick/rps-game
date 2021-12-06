@@ -26,7 +26,7 @@ const player1 = {
     score: document.querySelector("#box #player1-score"),
     cardsBox: document.querySelector("#box #player1-cards"),
     cards: Array.from(document.querySelectorAll("#box #player1-cards .card-item")),
-    hp: 10,
+    hp: 3,
     lastCardId: -1,
     lastSuit: RPS.Rock,
 };
@@ -35,7 +35,7 @@ const player2 = {
     score: document.querySelector("#box #player2-score"),
     cardsBox: document.querySelector("#box #player2-cards"),
     cards: Array.from(document.querySelectorAll("#box #player2-cards .card-item")),
-    hp: 10,
+    hp: 3,
     lastCardId: -1,
     lastSuit: RPS.Rock,
 };
@@ -127,16 +127,17 @@ function handleAI() {
         p[v]++;
         return p;
     }, [0, 0, 0]);
+    console.log(statics);
     // const max = Math.max(...playerCards);
     // const maxIndex = playerCards.indexOf(max);
     const maxIndex = statics.reduce((p, v, i) => {
         return statics[p] < v ? i : p;
     }, RPS.Rock);
+    console.log(maxIndex);
     switch (maxIndex) {
         case RPS.Rock:
             //TODO 電腦方要出布；如果沒有布，就隨機
             break;
-        //case ...:
     }
     // NPC 隨機
     // [石頭、石頭、石頭、剪刀、剪刀]
@@ -174,6 +175,8 @@ function handleAI() {
 function handleResult() {
     if (player1.lastSuit === player2.lastSuit) {
         console.log("平手");
+        message.style.backgroundImage = `url(./assets/images/msg_win.png)`;
+        message.classList.remove("invisible");
     }
     else if ((player1.lastSuit === RPS.Rock && player2.lastSuit === RPS.Scissors) ||
         (player1.lastSuit === RPS.Paper && player2.lastSuit === RPS.Rock) ||
@@ -199,7 +202,14 @@ function handleResult() {
             console.log("game set");
             removePlayerEvents();
             gameStatus = GameStatus.Over;
-            //TODO Display "Winner Player1/2"
+            if (player1.hp <= 0) {
+                message.style.backgroundImage = `url(./assets/images/msg_p2w.png)`;
+                message.classList.remove("invisible");
+            }
+            else {
+                message.style.backgroundImage = `url(./assets/images/msg_p1w.png)`;
+                message.classList.remove("invisible");
+            }
         }
         else {
             //TODO 更改 aiMode ?
