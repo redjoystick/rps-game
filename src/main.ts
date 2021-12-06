@@ -113,10 +113,10 @@ function onClick(event: MouseEvent) {
     // player1.cardsBox.classList.add("disabled");
     removePlayerEvents();
 
-    setRpsIcon(player1.result, playerCards[i]);
+    player1.cards[i].classList.add("invisible");
 
     player1.lastSuit = playerCards[i];
-    player1.cards[i].classList.add("invisible");
+    setRpsIcon(player1.result, playerCards[i]);
 
     handleAI();
 
@@ -128,79 +128,60 @@ function onClick(event: MouseEvent) {
 }
 
 function handleAI() {
-    const i = Math.random() * 4 >> 0;
-    player2.lastSuit = cpuCards[i];
-    setRpsIcon(player2.result, cpuCards[i]);
-    cpuCards[i] = Math.random() * MAX_RPS >> 0;
-    setRpsIcon(player2.cards[i], cpuCards[i]);
-
-    //TODO 判斷對方的卡牌類型的比例，決定出牌的內容
-    if (aiMode === AIMode.Random) {
-        //TODO...
-    }
-    else {
-
-    }
-
+    // 計算 player1 的各類拳的數量
     const statics = playerCards.reduce((p, v) => {
         p[v]++;
         return p;
     }, [0, 0, 0]);
-    console.log(statics);
 
-    // const max = Math.max(...playerCards);
-    // const maxIndex = playerCards.indexOf(max);
-    const maxIndex = statics.reduce((p, v, i) => {
-        return statics[p] < v ? i : p;
-    }, RPS.Rock) as RPS;
-    console.log(maxIndex);
+    /** 哪種拳的數量最多 */
+    // let maxIndex = RPS.Rock;
+    // for (let i = 0, max = statics.length; i < max; i++) {
+    //     if (statics[maxIndex] < statics[i])
+    //         maxIndex = i;
+    // }
+    const maxIndex = statics.reduce((p, v, i) => statics[p] < v ? i : p, RPS.Rock) as RPS;
+
     switch (maxIndex) {
         case RPS.Rock:
             //TODO 電腦方要出布；如果沒有布，就隨機
+            // for (let i = 0, max = cpuCards.length; i < max; i++) {
+            //     if (cpuCards[i] === RPS.Paper) {
+            //         player2.lastCardId = i;
+            //         break;
+            //     }
+            // }
+            player2.lastCardId = cpuCards.findIndex(v => v === RPS.Paper);
             break;
-        
+        case RPS.Paper:
+            player2.lastCardId = cpuCards.findIndex(v => v === RPS.Scissors);
+            break;
+        case RPS.Scissors:
+            player2.lastCardId = cpuCards.findIndex(v => v === RPS.Rock);
+            break;
     }
 
-    // NPC 隨機
+    // 如果找不到指定的拳，隨機出拳
+    if (player2.lastCardId < 0)
+        player2.lastCardId = Math.random() * 4 >> 0;
 
-    // [石頭、石頭、石頭、剪刀、剪刀]
-    // .reduce() / 變數 + for 1 >> 石頭: 3, 剪刀: 2
-    // NPC >> 必出布 >> 出石頭
+    // 出 found 索引的拳
+    const i = player2.lastCardId;
+    player2.cards[i].classList.add("invisible");
+
+    player2.lastSuit = cpuCards[i];
+    setRpsIcon(player2.result, cpuCards[i]);
     
-    const reduceArr = playerCards.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue
-      });
-    if ( reduceArr <= 3 ){
-        if ( cpuCards.indexOf(1) == -1 ){
-            player2.suit = cpuCards[Math.random() * 4 >> 0];
-        }else{
-            player2.suit = cpuCards[cpuCards.indexOf(1)];
-        };
-    }else if( reduceArr > 3 && reduceArr < 6){
-        if ( cpuCards.indexOf(2) == -1 ){
-            player2.suit = cpuCards[Math.random() * 4 >> 0];
-        }else{
-            player2.suit = cpuCards[cpuCards.indexOf(2)];
-        };
-    }
-    else {
-        if ( cpuCards.indexOf(0) == -1 ){
-            player2.suit = cpuCards[Math.random() * 4 >> 0];
-        }else{
-            player2.suit = cpuCards[cpuCards.indexOf(0)];
-        };
-    };
-    // type RPS = "rock" | "paper" | "scissors";
-    
-    // .map() / 變數 + for 2 >> 石頭: 0.6, 剪刀: 0.4
-    // NPC >> 布: 0.6, 石頭: 0.4
+    // 補一張新的牌
+    cpuCards[i] = Math.random() * MAX_RPS >> 0;
+    setRpsIcon(player2.cards[i], cpuCards[i], false);
 }
 
 /** 處理輸贏 */
 function handleResult() {
     if (player1.lastSuit === player2.lastSuit) {
         console.log("平手");
-        message.style.backgroundImage = `url(./assets/images/msg_win.png)`;
+        message.style.backgroundImage = `url(./assets/images/msg_draw.png)`;
         message.classList.remove("invisible");
     }
     else if (
@@ -241,12 +222,12 @@ function handleResult() {
                 message.style.backgroundImage = `url(./assets/images/msg_p1w.png)`
                 message.classList.remove("invisible");
             }
-
         }
         else {
             //TODO 更改 aiMode ?
 
             player1.cards[player1.lastCardId].classList.remove("invisible");
+            player2.cards[player2.lastCardId].classList.remove("invisible");
 
             clearRpsIcon(player1.result);
             clearRpsIcon(player2.result);
